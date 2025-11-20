@@ -1,6 +1,5 @@
-
-import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
-import { TokenData, ColumnConfig } from './types';
+import React, { useState, useEffect, memo } from 'react';
+import { TokenData } from './types';
 import { generateFakeToken } from './services/mockData';
 import { TokenCard } from './components/TokenCard';
 import { TokenSkeleton } from './components/Skeleton';
@@ -146,15 +145,21 @@ const ColumnHeader = ({ title, count, onProfileClick }: ColumnHeaderProps) => (
      
      {/* P1, P2, P3 Buttons */}
      <div className="flex bg-gray-800/50 rounded p-0.5 gap-0.5">
-        <Tooltip text="P1: 1.0% Slip / 0.001 Prio / 0 Bribe">
+     
+     <Tooltip 
+          text="P1: 1.0% Slip / 0.001 Prio / 0 Bribe"
+          position='bottom'
+        >
           <button 
               onClick={() => onProfileClick('P1')}
-              className="w-6 h-4 flex items-center justify-center rounded text-[9px] font-bold bg-[#1e2029] text-blue-400 border border-transparent hover:border-blue-500 hover:text-blue-300 transition-all"
+              className="w-4 h-4 z-3 flex items-center justify-center rounded text-[6px] font-bold bg-[#1e2029] text-blue-400 border border-transparent hover:border-blue-500 hover:text-blue-300 transition-all"
           >
               P1
           </button>
         </Tooltip>
-        <Tooltip text="P2: 2.5% Slip / 0.005 Prio / 0.01 Bribe">
+        <Tooltip text="P2: 2.5% Slip / 0.005 Prio / 0.01 Bribe"
+        position='bottom'
+        >
           <button 
           onClick={() => onProfileClick('P2')}
           className="w-6 h-4 flex items-center justify-center rounded text-[9px] font-bold bg-[#1e2029] text-purple-400 border border-transparent hover:border-purple-500 hover:text-purple-300 transition-all"
@@ -162,7 +167,8 @@ const ColumnHeader = ({ title, count, onProfileClick }: ColumnHeaderProps) => (
           P2
       </button>
     </Tooltip>
-    <Tooltip text="P3: 5.0% Slip / 0.02 Prio / 0.1 Bribe">
+    <Tooltip text="P3: 5.0% Slip / 0.02 Prio / 0.1 Bribe"
+    position='bottom'>
       <button 
           onClick={() => onProfileClick('P3')}
           className="w-6 h-4 flex items-center justify-center rounded text-[9px] font-bold bg-[#1e2029] text-yellow-400 border border-transparent hover:border-yellow-500 hover:text-yellow-300 transition-all"
@@ -170,9 +176,6 @@ const ColumnHeader = ({ title, count, onProfileClick }: ColumnHeaderProps) => (
           P3
       </button>
     </Tooltip>
-          <div className="w-2 h-2 bg-blue-500 rounded-full m-0.5"></div>
-          <div className="w-2 h-2 bg-gray-600 rounded-full m-0.5"></div>
-          <div className="w-2 h-2 bg-gray-600 rounded-full m-0.5"></div>
        </div>
     </div>
   </div>
