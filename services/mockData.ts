@@ -32,7 +32,23 @@ export const generateFakeToken = (status: 'new' | 'final' | 'migrated'): TokenDa
       telegram: Math.random() > 0.3,
     },
     status,
-    priceTrend: 'neutral'
+    priceTrend: 'neutral',
+    
+    // New Mock Data
+    auditStats: {
+        topHoldersPercentage: Math.floor(Math.random() * 50),
+        devActivityPercentage: Math.floor(Math.random() * 20),
+        sniperScore: Math.floor(Math.random() * 100),
+        insiderPercentage: Math.floor(Math.random() * 10),
+        clusterScore: Math.floor(Math.random() * 100),
+    },
+    badgeCounts: {
+        trophy: Math.floor(Math.random() * 3),
+        rocket: Math.floor(Math.random() * 5),
+        crown: Math.floor(Math.random() * 100),
+        crownTotal: 3651,
+    },
+    chartCount: Math.floor(Math.random() * 3)
   };
 };
 

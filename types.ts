@@ -21,6 +21,21 @@ export interface TokenData {
   };
   status: 'new' | 'final' | 'migrated';
   priceTrend: 'up' | 'down' | 'neutral';
+  
+  auditStats: {
+    topHoldersPercentage: number; // User
+    devActivityPercentage: number; // Chef
+    sniperScore: number; // Target
+    insiderPercentage: number; // Ghost
+    clusterScore: number; // Molecule
+  };
+  badgeCounts: {
+    trophy: number;
+    rocket: number;
+    crown: number; // King of the hill
+    crownTotal: number; 
+  };
+  chartCount: number;
 }
 
 export type SortOption = 'newest' | 'marketCap' | 'volume';
