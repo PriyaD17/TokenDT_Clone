@@ -17,12 +17,12 @@ const useTokenData = () => {
 
   const [loading, setLoading] = useState(true);
 
- 
+
   const sortByNewest = (list: TokenData[]) => {
     return [...list].sort((a, b) => b.createdTime - a.createdTime);
   };
 
-
+  // Initial Load
   useEffect(() => {
     const timer = setTimeout(() => {
       setTokens({
@@ -35,16 +35,16 @@ const useTokenData = () => {
     return () => clearTimeout(timer);
   }, []);
 
-
+  // Simulated WebSocket Updates 
   useEffect(() => {
     if (loading) return;
 
-    const interval = setInterval(() => {
+  
+    const priceInterval = setInterval(() => {
       setTokens(prev => {
         const newState = { ...prev };
-        const categories: (keyof typeof prev)[] = ['new', 'final', 'migrated'];
+        const categories: ('new' | 'final' | 'migrated')[] = ['new', 'final', 'migrated'];
 
-      
         const updateCount = Math.floor(Math.random() * 5) + 3; 
 
         for (let i = 0; i < updateCount; i++) {
@@ -55,14 +55,12 @@ const useTokenData = () => {
              const idx = Math.floor(Math.random() * colTokens.length);
              const token = { ...colTokens[idx] };
 
-            
              const volatility = colKey === 'migrated' ? 0.005 : 0.02; 
              const change = (Math.random() - 0.48) * volatility; 
              
              token.marketCap = Math.max(1000, token.marketCap * (1 + change));
              token.priceChange24h += (change * 100);
              
-            
              if (change > 0.0001) token.priceTrend = 'up';
              else if (change < -0.0001) token.priceTrend = 'down';
              else token.priceTrend = 'neutral';
@@ -70,29 +68,58 @@ const useTokenData = () => {
              colTokens[idx] = token;
              newState[colKey] = colTokens;
         }
-
-        if (Math.random() > 0.5) { 
-          
-           const targetCol = categories[Math.floor(Math.random() * categories.length)];
-           
-           const newToken = generateFakeToken(targetCol as "new" | "final" | "migrated");
-           newToken.createdTime = Date.now(); 
-           
-
-           newState[targetCol] = [newToken, ...newState[targetCol]].slice(0, 50);
-        }
-
         return newState;
       });
-    }, 300); 
+    }, 300);
 
-    return () => clearInterval(interval);
+  
+    const newPairsInterval = setInterval(() => {
+        setTokens(prev => {
+            const newToken = generateFakeToken('new');
+            newToken.createdTime = Date.now();
+            return {
+                ...prev,
+                new: [newToken, ...prev.new].slice(0, 50)
+            };
+        });
+    }, 1000);
+
+  
+    const finalInterval = setInterval(() => {
+        setTokens(prev => {
+            const newToken = generateFakeToken('final');
+            newToken.createdTime = Date.now();
+            return {
+                ...prev,
+                final: [newToken, ...prev.final].slice(0, 50)
+            };
+        });
+    }, 60000);
+
+
+    const migratedInterval = setInterval(() => {
+        setTokens(prev => {
+            const newToken = generateFakeToken('migrated');
+            newToken.createdTime = Date.now();
+            return {
+                ...prev,
+                migrated: [newToken, ...prev.migrated].slice(0, 50)
+            };
+        });
+    }, 20000);
+
+    return () => {
+      clearInterval(priceInterval);
+      clearInterval(newPairsInterval);
+      clearInterval(finalInterval);
+      clearInterval(migratedInterval);
+    };
   }, [loading]);
 
   return { tokens, loading };
 };
 
-// --- Components ---
+
 
 const ColumnHeader = ({ title, count }: { title: string; count: number }) => (
   <div className="flex items-center justify-between p-3 bg-[#0a0b0f] border-b border-gray-800 z-10">
@@ -143,7 +170,7 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen bg-[#0a0b0f] text-gray-300 font-sans selection:bg-blue-500/30">
-      {/* App Header (Simulated) */}
+    
       <header className="h-12 bg-[#0a0b0f] border-b border-gray-800 flex items-center px-4 justify-between shrink-0 z-20">
          <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-md flex items-center justify-center text-white font-bold text-xs shadow-lg shadow-blue-500/20">T</div>
@@ -188,7 +215,7 @@ const App: React.FC = () => {
         </div>
       </div>
       
-      {/* Global Footer / Status Bar */}
+      {/* Status Bar */}
       <div className="h-6 bg-[#050508] border-t border-gray-800 flex items-center justify-between px-3 text-[10px] text-gray-600 shrink-0">
          <div className="flex gap-3">
             <span className="flex items-center gap-1.5 hover:text-green-500 transition-colors cursor-default">
