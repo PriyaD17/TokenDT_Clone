@@ -1,6 +1,3 @@
-
-import React from 'react';
-
 export const TokenSkeleton = () => (
   <div className="relative p-2 mb-2 bg-[#13141b] rounded-md overflow-hidden border border-transparent">
     <style>

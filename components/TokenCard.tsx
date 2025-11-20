@@ -16,7 +16,6 @@ interface TokenCardProps {
 }
 
 
-// 1. Live Time Ago Updater
 const LiveTimeAgo = ({ timestamp }: { timestamp: number }) => {
   const [timeLabel, setTimeLabel] = useState(formatTimeAgo(timestamp));
 
@@ -31,7 +30,7 @@ const LiveTimeAgo = ({ timestamp }: { timestamp: number }) => {
   return <span className="text-[10px] text-green-400 font-bold">{timeLabel}</span>;
 };
 
-// 2. Status Tooltip Portal
+
 const TokenStatusTooltip = ({ token, rect }: { token: TokenData; rect: DOMRect }) => {
   if (typeof document === 'undefined') return null;
 
@@ -62,7 +61,7 @@ const TokenStatusTooltip = ({ token, rect }: { token: TokenData; rect: DOMRect }
   }
 
   const style: React.CSSProperties = {
-    top: `${rect.top - 12}px`, // positioned higher than the box
+    top: `${rect.top - 12}px`, 
     left: `${rect.left + rect.width / 2}px`,
     transform: 'translate(-50%, -100%)',
   };
@@ -84,24 +83,22 @@ const TokenStatusTooltip = ({ token, rect }: { token: TokenData; rect: DOMRect }
 };
 
 
-// --- Main Component ---
+
 
 export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
   
-  // Randomly decide if this token has a fire badge (15% chance)
-  // Using useState with initializer ensures it stays constant for this component instance
+ 
   const [showFire] = useState(() => Math.random() > 0.85);
 
-  // Image Hover State (Existing)
+  
   const [hoverRect, setHoverRect] = useState<DOMRect | null>(null);
   const imageRef = useRef<HTMLDivElement>(null);
 
-  // Card Hover State (New)
   const [cardRect, setCardRect] = useState<DOMRect | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Safe access defaults
+  
   const auditStats = token.auditStats || { 
       topHoldersPercentage: 0, devActivityPercentage: 0, sniperScore: 0, insiderPercentage: 0, clusterScore: 0 
   };
@@ -137,13 +134,14 @@ export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
       >
         
         <div className="flex gap-3">
-            {/* Column 1: Image with Badges */}
+          
             <div 
                 ref={imageRef}
                 className="relative shrink-0 w-14 h-14"
                 onMouseEnter={handleImageEnter}
                 onMouseLeave={handleImageLeave}
             >
+
                 <div className={`absolute inset-0 bg-gray-800 rounded-lg transition-opacity duration-500 ${imgLoaded ? 'opacity-0' : 'opacity-100'}`} />
                 <img 
                     src={token.image} 
@@ -153,7 +151,7 @@ export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
                     onLoad={() => setImgLoaded(true)}
                 />
                 
-                {/* Bonding Curve Progress Bar */}
+              
                 {token.status !== 'migrated' && (
                     <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-800/80 rounded-b-lg overflow-hidden">
                         <div 
@@ -173,7 +171,7 @@ export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
                 )}
             </div>
 
-            {/* Column 2: Main Info & Stats */}
+            {/* Column 2: Info */}
             <div className="flex flex-col flex-1 min-w-0 gap-1">
                 {/* Row 1: Header */}
                 <div className="flex items-baseline gap-1.5 truncate min-w-0">
@@ -184,7 +182,7 @@ export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
                     <IconCopy className="w-3 h-3 text-gray-600 hover:text-gray-400 cursor-pointer shrink-0" />
                 </div>
 
-                {/* Row 2: Icons & Metrics */}
+              
                 <div className="flex items-center gap-2 text-[10px] text-gray-500">
                     <LiveTimeAgo timestamp={token.createdTime} />
                     <div className="w-[1px] h-2 bg-gray-700"></div>
@@ -216,7 +214,7 @@ export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
                     </div>
                 </div>
 
-                {/* Row 3: Green Pills */}
+            
                 <div className="flex items-center gap-1.5 mt-0.5 overflow-hidden flex-wrap h-5">
                     <Tooltip text={`Top Holders: ${auditStats.topHoldersPercentage}%`} position="top">
                         <div className="flex items-center gap-1 bg-[#1e2029] border border-gray-800 rounded px-1.5 py-[1px] text-[9px] text-green-400 cursor-default">
@@ -255,10 +253,10 @@ export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
                 </div>
             </div>
 
-            {/* Column 3: Financials & Action */}
+            {/* Column 3: Stats & Action */}
             <div className="flex flex-col items-end justify-between min-w-[80px]">
                 
-                {/* Stats Block */}
+              
                 <div className="flex flex-col items-end text-[10px] leading-tight gap-0.5">
                     <div className="flex items-center gap-2">
                         <span className="text-gray-500 font-bold">V</span>
@@ -284,7 +282,7 @@ export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
                     </div>
                 </div>
 
-                {/* Flash Button */}
+              
                 <button 
                     className="mt-1 bg-[#4c82fb] hover:bg-[#3b6cdb] active:scale-95 transition-all text-white text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-lg shadow-blue-900/20 w-full justify-center"
                     onClick={(e) => e.stopPropagation()}
@@ -295,11 +293,11 @@ export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
             </div>
         </div>
       
-        {/* Gradient Overlay on Hover */}
+      
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-500 rounded-lg" />
       </div>
       
-      {/* Portals for Hover Effects */}
+    
       {hoverRect && <TokenHoverPreview token={token} anchorRect={hoverRect} />}
       {cardRect && <TokenStatusTooltip token={token} rect={cardRect} />}
     </>

@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef} from 'react';
 import ReactDOM from 'react-dom';
 
 interface TooltipProps {
@@ -19,15 +19,14 @@ export const Tooltip: React.FC<TooltipProps> = ({ text, children, position = 'to
         const rect = triggerRef.current.getBoundingClientRect();
         const scrollY = window.scrollY || document.documentElement.scrollTop;
         
-        // Calculate center horizontal
         const left = rect.left + rect.width / 2;
         
         // Calculate vertical
         let top = 0;
         if (position === 'top') {
-             top = rect.top + scrollY - 8; // 8px gap above
+             top = rect.top + scrollY - 8; 
         } else {
-             top = rect.bottom + scrollY + 8; // 8px gap below
+             top = rect.bottom + scrollY + 8; 
         }
         setCoords({ left, top });
      }

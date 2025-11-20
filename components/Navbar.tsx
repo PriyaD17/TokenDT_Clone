@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { IconSearch, IconBell, IconStar, IconChevronDown, IconUser, IconWallet, IconAxiom, IconMenu, IconX } from './Icons';
 
 export const Navbar = () => {
@@ -7,9 +7,9 @@ export const Navbar = () => {
 
   return (
     <nav className="h-16 bg-black border-b border-gray-800 flex items-center justify-between px-4 md:px-5 shrink-0 z-50 text-sm relative">
-        {/* Left: Logo & Nav */}
+        
         <div className="flex items-center gap-4 md:gap-8">
-            {/* Mobile Menu Toggle */}
+        
             <button 
                 className="md:hidden text-gray-400 hover:text-white p-1"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -46,9 +46,9 @@ export const Navbar = () => {
             </div>
         )}
 
-        {/* Right: Actions */}
+        
         <div className="flex items-center gap-2 md:gap-3">
-            {/* Search */}
+        
             <div className="relative group">
                 <IconSearch className="md:absolute md:left-3 md:top-1/2 md:-translate-y-1/2 w-4 h-4 text-gray-500 md:group-focus-within:text-blue-400 transition-colors" />
                 <input 
@@ -59,20 +59,20 @@ export const Navbar = () => {
                 <div className="hidden md:flex absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 border border-gray-700 rounded items-center justify-center text-[10px] text-gray-500">/</div>
             </div>
 
-            {/* Network - Condensed on Mobile */}
+    
             <button className="flex items-center gap-2 bg-[#13141b] hover:bg-[#1a1c26] border border-gray-800 rounded-full px-2 md:px-3 py-1.5 md:py-2 transition-colors">
                 <div className="w-4 h-4 rounded-full bg-gradient-to-tr from-[#9945FF] to-[#14F195] shrink-0"></div> 
                 <span className="hidden md:inline text-xs font-bold text-gray-200">SOL</span>
                 <IconChevronDown className="w-3 h-3 text-gray-500" />
             </button>
 
-            {/* Deposit */}
+        
             <button className="bg-[#4c82fb] hover:bg-[#3b6cdb] text-white text-xs font-bold px-3 md:px-5 py-1.5 md:py-2 rounded-full transition-colors shadow-lg shadow-blue-900/20">
                 <span className="md:hidden">+</span>
                 <span className="hidden md:inline">Deposit</span>
             </button>
 
-            {/* Icons - Hidden on small mobile */}
+        
             <button className="hidden sm:block p-2 text-gray-400 hover:text-white transition-colors">
                 <IconStar className="w-5 h-5" />
             </button>
@@ -81,7 +81,7 @@ export const Navbar = () => {
                 <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full border border-black"></span>
             </button>
 
-            {/* Wallet */}
+            
             <div className="flex items-center bg-[#13141b] border border-gray-800 rounded-full p-1 md:pr-3 gap-2 md:gap-3 ml-1 cursor-pointer hover:bg-[#1a1c26] transition-colors">
                 <div className="flex items-center gap-2 px-1 md:px-2 md:border-r border-gray-800">
                     <IconWallet className="w-4 h-4 text-gray-500" />
@@ -98,7 +98,7 @@ export const Navbar = () => {
                 <IconChevronDown className="w-3 h-3 text-gray-500" />
             </div>
 
-            {/* User */}
+
             <button className="hidden md:block ml-1 p-1.5 rounded-full bg-gray-800/50 hover:bg-gray-800 text-gray-400 hover:text-white transition-colors">
                 <IconUser className="w-5 h-5" />
             </button>
