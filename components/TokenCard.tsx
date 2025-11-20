@@ -90,6 +90,10 @@ const TokenStatusTooltip = ({ token, rect }: { token: TokenData; rect: DOMRect }
 export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
   
+  // Randomly decide if this token has a fire badge (20% chance)
+  // Using useState with initializer ensures it stays constant for this component instance
+  const [showFire] = useState(() => Math.random() > 0.8);
+
   // Image Hover State (Existing)
   const [hoverRect, setHoverRect] = useState<DOMRect | null>(null);
   const imageRef = useRef<HTMLDivElement>(null);
@@ -149,21 +153,36 @@ export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
                     loading="lazy"
                     onLoad={() => setImgLoaded(true)}
                 />
-                {/* Fire Badge */}
-                <div className="absolute -bottom-1.5 -right-1.5 bg-black rounded-full p-[1px] border border-gray-800 shadow-sm z-10">
-                   <div className="bg-orange-500/10 rounded-full p-0.5">
-                       <IconFire className="w-3 h-3 text-orange-500 fill-orange-500" />
-                   </div>
-                </div>
+                
+                {/* Bonding Curve Progress Bar */}
+                {token.status !== 'migrated' && (
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-800/80 rounded-b-lg overflow-hidden">
+                        <div 
+                           className="h-full bg-green-500 shadow-[0_0_4px_rgba(34,197,94,0.6)]"
+                           style={{ width: `${token.bondingCurveProgress}%` }}
+                        />
+                    </div>
+                )}
+
+                {/* Fire Badge - Randomly shown */}
+                {showFire && (
+                    <div className="absolute -bottom-1.5 -right-1.5 bg-black rounded-full p-[1px] border border-gray-800 shadow-sm z-10">
+                    <div className="bg-orange-500/10 rounded-full p-0.5">
+                        <IconFire className="w-3 h-3 text-orange-500 fill-orange-500" />
+                    </div>
+                    </div>
+                )}
             </div>
 
             {/* Column 2: Main Info & Stats */}
             <div className="flex flex-col flex-1 min-w-0 gap-1">
                 {/* Row 1: Header */}
-                <div className="flex items-baseline gap-1.5 truncate">
-                    <span className="font-bold text-gray-100 text-sm">{token.ticker}</span>
-                    <span className="text-[11px] text-gray-500 truncate">{token.name}</span>
-                    <IconCopy className="w-3 h-3 text-gray-600 hover:text-gray-400 cursor-pointer" />
+                <div className="flex items-baseline gap-1.5 truncate min-w-0">
+                    <span className="font-bold text-gray-100 text-sm shrink-0">{token.ticker}</span>
+                    <Tooltip text={token.name} position="top" className="min-w-0 truncate">
+                         <span className="text-[11px] text-gray-500 truncate block">{token.name}</span>
+                    </Tooltip>
+                    <IconCopy className="w-3 h-3 text-gray-600 hover:text-gray-400 cursor-pointer shrink-0" />
                 </div>
 
                 {/* Row 2: Icons & Metrics */}
@@ -200,26 +219,40 @@ export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
 
                 {/* Row 3: Green Pills */}
                 <div className="flex items-center gap-1.5 mt-0.5 overflow-hidden flex-wrap h-5">
-                    <div className="flex items-center gap-1 bg-[#1e2029] border border-gray-800 rounded px-1.5 py-[1px] text-[9px] text-green-400">
-                        <IconUser className="w-2.5 h-2.5" />
-                        {auditStats.topHoldersPercentage}%
-                    </div>
-                    <div className="flex items-center gap-1 bg-[#1e2029] border border-gray-800 rounded px-1.5 py-[1px] text-[9px] text-green-400">
-                        <IconChef className="w-2.5 h-2.5" />
-                        {auditStats.devActivityPercentage}% 1mo
-                    </div>
-                    <div className="flex items-center gap-1 bg-[#1e2029] border border-gray-800 rounded px-1.5 py-[1px] text-[9px] text-green-400">
-                        <IconTarget className="w-2.5 h-2.5" />
-                        {auditStats.sniperScore}%
-                    </div>
-                    <div className="flex items-center gap-1 bg-[#1e2029] border border-gray-800 rounded px-1.5 py-[1px] text-[9px] text-green-400">
-                        <IconGhost className="w-2.5 h-2.5" />
-                        {auditStats.insiderPercentage}%
-                    </div>
-                    <div className="flex items-center gap-1 bg-[#1e2029] border border-gray-800 rounded px-1.5 py-[1px] text-[9px] text-green-400">
-                        <IconMolecule className="w-2.5 h-2.5" />
-                        {auditStats.clusterScore}%
-                    </div>
+                    <Tooltip text={`Top Holders: ${auditStats.topHoldersPercentage}%`} position="top">
+                        <div className="flex items-center gap-1 bg-[#1e2029] border border-gray-800 rounded px-1.5 py-[1px] text-[9px] text-green-400 cursor-default">
+                            <IconUser className="w-2.5 h-2.5" />
+                            {auditStats.topHoldersPercentage}%
+                        </div>
+                    </Tooltip>
+                    
+                    <Tooltip text={`Dev Activity (1mo): ${auditStats.devActivityPercentage}%`} position="top">
+                        <div className="flex items-center gap-1 bg-[#1e2029] border border-gray-800 rounded px-1.5 py-[1px] text-[9px] text-green-400 cursor-default">
+                            <IconChef className="w-2.5 h-2.5" />
+                            {auditStats.devActivityPercentage}% 1mo
+                        </div>
+                    </Tooltip>
+
+                    <Tooltip text={`Sniper Score: ${auditStats.sniperScore}`} position="top">
+                        <div className="flex items-center gap-1 bg-[#1e2029] border border-gray-800 rounded px-1.5 py-[1px] text-[9px] text-green-400 cursor-default">
+                            <IconTarget className="w-2.5 h-2.5" />
+                            {auditStats.sniperScore}%
+                        </div>
+                    </Tooltip>
+
+                    <Tooltip text={`Insider Holdings: ${auditStats.insiderPercentage}%`} position="top">
+                        <div className="flex items-center gap-1 bg-[#1e2029] border border-gray-800 rounded px-1.5 py-[1px] text-[9px] text-green-400 cursor-default">
+                            <IconGhost className="w-2.5 h-2.5" />
+                            {auditStats.insiderPercentage}%
+                        </div>
+                    </Tooltip>
+
+                    <Tooltip text={`Cluster Score: ${auditStats.clusterScore}`} position="top">
+                        <div className="flex items-center gap-1 bg-[#1e2029] border border-gray-800 rounded px-1.5 py-[1px] text-[9px] text-green-400 cursor-default">
+                            <IconMolecule className="w-2.5 h-2.5" />
+                            {auditStats.clusterScore}%
+                        </div>
+                    </Tooltip>
                 </div>
             </div>
 
