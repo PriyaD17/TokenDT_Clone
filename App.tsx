@@ -144,7 +144,7 @@ const ColumnHeader = ({ title, count, onProfileClick }: ColumnHeaderProps) => (
      </button>
      
      {/* P1, P2, P3 Buttons */}
-     <div className="flex bg-gray-800/50 rounded p-0.5 gap-0.5">
+     <div className="hidden sm:flex bg-gray-800/50 rounded p-0.5 gap-0.5">
      
      <Tooltip 
           text="P1: 1.0% Slip / 0.001 Prio / 0 Bribe"
@@ -208,13 +208,13 @@ const TokenList = memo(({ tokens, loading }: { tokens: TokenData[]; loading: boo
 const App: React.FC = () => {
   const { tokens, loading } = useTokenData();
   const [settingsProfile, setSettingsProfile] = useState<string | null>(null);
-
+  const [activeMobileTab, setActiveMobileTab] = useState<'new' | 'final' | 'migrated'>('new');
   return (
     <div className="flex flex-col h-screen bg-[#0a0b0f] text-gray-300 font-sans selection:bg-blue-500/30">
     <Navbar />
       
       {/* Secondary Toolbar */}
-      <div className="h-8 bg-black border-b border-gray-800 flex items-center px-4 gap-1 shrink-0 z-40">
+      <div className="h-8 bg-black border-b border-gray-800 flex items-center px-4 gap-1 shrink-0 z-40 overflow-x-auto no-scrollbar">
          <button className="p-1.5 text-gray-500 hover:text-white transition-colors hover:bg-gray-800 rounded" onClick={() => setSettingsProfile('P1')}>
             <IconSettings className="w-3.5 h-3.5" />
          </button>
@@ -224,6 +224,33 @@ const App: React.FC = () => {
          </button>
          <button className="p-1.5 text-gray-500 hover:text-white transition-colors hover:bg-gray-800 rounded">
             <IconChart className="w-3.5 h-3.5" />
+            </button>
+         {/* Mobile only spacer */}
+         <div className="flex-1 md:hidden"></div>
+         <div className="md:hidden text-[10px] text-gray-500">
+             Operational
+         </div>
+      </div>
+
+      {/* Mobile Tab Navigation */}
+      <div className="flex md:hidden border-b border-gray-800 bg-[#0a0b0f]">
+          <button 
+            onClick={() => setActiveMobileTab('new')}
+            className={`flex-1 py-3 text-xs font-bold transition-colors ${activeMobileTab === 'new' ? 'text-green-400 border-b-2 border-green-500 bg-green-500/5' : 'text-gray-500 hover:text-gray-300'}`}
+          >
+            New Pairs
+          </button>
+          <button 
+            onClick={() => setActiveMobileTab('final')}
+            className={`flex-1 py-3 text-xs font-bold transition-colors ${activeMobileTab === 'final' ? 'text-blue-400 border-b-2 border-blue-500 bg-blue-500/5' : 'text-gray-500 hover:text-gray-300'}`}
+          >
+            Final Stretch
+          </button>
+          <button 
+            onClick={() => setActiveMobileTab('migrated')}
+            className={`flex-1 py-3 text-xs font-bold transition-colors ${activeMobileTab === 'migrated' ? 'text-purple-400 border-b-2 border-purple-500 bg-purple-500/5' : 'text-gray-500 hover:text-gray-300'}`}
+          >
+            Migrated
          </button>
          </div>
       <header className="h-12 bg-[#0a0b0f] border-b border-gray-800 flex items-center px-4 justify-between shrink-0 z-20">
@@ -244,11 +271,11 @@ const App: React.FC = () => {
 
       {/* Main Grid Content */}
       <ErrorBoundary>
-      <div className="flex-1 overflow-hidden">
-        <div className="grid grid-cols-1 md:grid-cols-3 h-full divide-y md:divide-y-0 md:divide-x divide-gray-800">
+      <div className="flex-1 overflow-hidden relative">
+        <div className="grid grid-cols-1 md:grid-cols-3 h-full md:divide-x divide-gray-800">
           
           {/* Column 1: New Pairs */}
-          <div className="flex flex-col h-full min-h-0 min-w-0 relative bg-[#0a0b0f]/50">
+          <div className={`flex flex-col h-full min-h-0 min-w-0 relative bg-[#0a0b0f]/50 ${activeMobileTab === 'new' ? 'flex' : 'hidden'} md:flex`}>
             <div className="absolute top-0 left-0 w-[1px] h-full bg-gradient-to-b from-green-500/20 to-transparent pointer-events-none"></div>
             <ColumnHeader title="New Pairs" 
                 count={tokens.new.length} 
@@ -257,8 +284,8 @@ const App: React.FC = () => {
           </div>
 
           {/* Column 2: Final Stretch */}
-          <div className="flex flex-col h-full min-h-0 min-w-0 relative bg-[#0a0b0f]/50">
-            <div className="absolute top-0 left-0 w-[1px] h-full bg-gradient-to-b from-yellow-500/20 to-transparent pointer-events-none"></div>
+          <div className={`flex flex-col h-full min-h-0 min-w-0 relative bg-[#0a0b0f]/50 ${activeMobileTab === 'final' ? 'flex' : 'hidden'} md:flex`}>
+              <div className="absolute top-0 left-0 w-[1px] h-full bg-gradient-to-b from-blue-500/20 to-transparent pointer-events-none"></div>
             <ColumnHeader title="Final Stretch" 
                 count={tokens.final.length} 
                 onProfileClick={setSettingsProfile}/>
@@ -266,7 +293,7 @@ const App: React.FC = () => {
           </div>
 
           {/* Column 3: Migrated */}
-          <div className="flex flex-col h-full min-h-0 min-w-0 relative bg-[#0a0b0f]/50">
+          <div className={`flex flex-col h-full min-h-0 min-w-0 relative bg-[#0a0b0f]/50 ${activeMobileTab === 'migrated' ? 'flex' : 'hidden'} md:flex`}>
             <div className="absolute top-0 left-0 w-[1px] h-full bg-gradient-to-b from-purple-500/20 to-transparent pointer-events-none"></div>
             <ColumnHeader title="Migrated" 
                 count={tokens.migrated.length} 
@@ -278,13 +305,13 @@ const App: React.FC = () => {
       </div>
       </ErrorBoundary>
       {/* Status Bar */}
-      <div className="h-6 bg-[#050508] border-t border-gray-800 flex items-center justify-between px-3 text-[10px] text-gray-600 shrink-0">
+      <div className="hidden md:flex h-6 bg-[#050508] border-t border-gray-800 items-center justify-between px-3 text-[10px] text-gray-600 shrink-0">
          <div className="flex gap-3">
             <span className="flex items-center gap-1.5 hover:text-green-500 transition-colors cursor-default">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> 
                 Operational
             </span>
-            <span className="hidden sm:inline">v1.4.2-beta</span>
+            <span>v1.4.2-beta</span>
          </div>
          <div className="flex gap-4">
             <span className="hover:text-gray-400 cursor-pointer transition-colors">Privacy</span>
