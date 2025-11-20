@@ -10,12 +10,12 @@ interface TokenCardProps {
   token: TokenData;
 }
 
-// Component to handle live time updates separately to avoid re-rendering the whole card
+
 const LiveTimeAgo = ({ timestamp }: { timestamp: number }) => {
   const [timeLabel, setTimeLabel] = useState(formatTimeAgo(timestamp));
 
   useEffect(() => {
-    // Update immediately
+  
     setTimeLabel(formatTimeAgo(timestamp));
 
     const interval = setInterval(() => {
@@ -54,7 +54,7 @@ export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
     <>
       <div className="group relative bg-[#13141b] hover:bg-[#1a1c26] border border-transparent hover:border-gray-700 transition-all duration-150 rounded-md p-2 mb-2 cursor-default overflow-hidden">
         
-        {/* Top Row: Header info */}
+    
         <div className="flex justify-between items-start mb-2">
           <div className="flex items-center gap-2 overflow-hidden">
             {/* Image with Hover Interaction */}
@@ -126,7 +126,7 @@ export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
           </div>
         </div>
 
-        {/* Bonding Curve Bar */}
+      
         <div className="w-full h-1 bg-gray-800 rounded-full overflow-hidden mt-2 mb-2">
           <div 
               className={`h-full ${barColor} transition-all duration-1000 ease-out`} 
