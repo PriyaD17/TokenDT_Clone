@@ -10,12 +10,12 @@ interface TokenCardProps {
   token: TokenData;
 }
 
-
+// Component to handle live time updates separately to avoid re-rendering the whole card
 const LiveTimeAgo = ({ timestamp }: { timestamp: number }) => {
   const [timeLabel, setTimeLabel] = useState(formatTimeAgo(timestamp));
 
   useEffect(() => {
-  
+    // Update immediately
     setTimeLabel(formatTimeAgo(timestamp));
 
     const interval = setInterval(() => {
@@ -52,9 +52,28 @@ export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
 
   return (
     <>
-      <div className="group relative bg-[#13141b] hover:bg-[#1a1c26] border border-transparent hover:border-gray-700 transition-all duration-150 rounded-md p-2 mb-2 cursor-default overflow-hidden">
+      <div className="group relative bg-[#13141b] hover:bg-[#1a1c26] border border-transparent hover:border-gray-700 transition-all duration-150 rounded-md p-2 mb-2 cursor-default hover:z-30">
         
-    
+        
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-40 pointer-events-none whitespace-nowrap">
+          {token.status === 'new' && (
+             <div className="bg-black border border-gray-700 shadow-lg px-2 py-1 rounded text-[10px] font-bold text-green-400 opacity-0 group-hover:opacity-100 transition-all duration-200 scale-95 group-hover:scale-100 translate-y-2 group-hover:translate-y-0">
+               Bonding: {token.bondingCurveProgress.toFixed(0)}%
+             </div>
+          )}
+          {token.status === 'final' && (
+             <div className="bg-black border border-gray-700 shadow-lg px-2 py-1 rounded text-[10px] font-bold text-blue-400 opacity-0 group-hover:opacity-100 transition-all duration-200 scale-95 group-hover:scale-100 translate-y-2 group-hover:translate-y-0">
+               Migrating
+             </div>
+          )}
+          {token.status === 'migrated' && (
+             <div className="bg-black border border-gray-700 shadow-lg px-2 py-1 rounded text-[10px] font-bold text-[#f5f5dc] opacity-0 group-hover:opacity-100 transition-all duration-200 scale-95 group-hover:scale-100 translate-y-2 group-hover:translate-y-0">
+               Virtual Curve
+             </div>
+          )}
+        </div>
+
+        {/* Top Row: Header info */}
         <div className="flex justify-between items-start mb-2">
           <div className="flex items-center gap-2 overflow-hidden">
             {/* Image with Hover Interaction */}
@@ -126,7 +145,7 @@ export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
           </div>
         </div>
 
-      
+        {/* Bonding Curve Bar */}
         <div className="w-full h-1 bg-gray-800 rounded-full overflow-hidden mt-2 mb-2">
           <div 
               className={`h-full ${barColor} transition-all duration-1000 ease-out`} 
@@ -162,7 +181,7 @@ export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
         </div>
 
         {/* Hover Overlay Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-500 rounded-md" />
       </div>
       
       {hoverRect && <TokenHoverPreview token={token} anchorRect={hoverRect} />}
