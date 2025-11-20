@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { TokenData } from '../types';
 import { formatCurrency, formatTimeAgo } from '../services/mockData';
 import { 
-    IconGlobe, IconTwitter, IconSearch, IconCopy, IconZap, 
+    IconSearch, IconCopy, IconZap, 
     IconFire, IconCoin, IconHandWave, IconUser, IconChart, 
     IconTrophy, IconCrown, IconChef, IconTarget, IconGhost, IconMolecule 
 } from './Icons';
@@ -15,7 +15,6 @@ interface TokenCardProps {
   token: TokenData;
 }
 
-// --- Sub-components ---
 
 // 1. Live Time Ago Updater
 const LiveTimeAgo = ({ timestamp }: { timestamp: number }) => {
@@ -90,9 +89,9 @@ const TokenStatusTooltip = ({ token, rect }: { token: TokenData; rect: DOMRect }
 export const TokenCard: React.FC<TokenCardProps> = memo(({ token }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
   
-  // Randomly decide if this token has a fire badge (20% chance)
+  // Randomly decide if this token has a fire badge (15% chance)
   // Using useState with initializer ensures it stays constant for this component instance
-  const [showFire] = useState(() => Math.random() > 0.8);
+  const [showFire] = useState(() => Math.random() > 0.85);
 
   // Image Hover State (Existing)
   const [hoverRect, setHoverRect] = useState<DOMRect | null>(null);
