@@ -255,8 +255,9 @@ const App: React.FC = () => {
          </div>
       <header className="h-12 bg-[#0a0b0f] border-b border-gray-800 flex items-center px-4 justify-between shrink-0 z-20">
          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-md flex items-center justify-center text-white font-bold text-xs shadow-lg shadow-blue-500/20">P</div>
             <span className="font-bold text-gray-100 tracking-tight">Pulse</span>
+            <div className="w-4 h-4 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-md flex items-center justify-center text-white font-bold text-xs shadow-lg shadow-blue-500/20">S</div>
+            <div className="w-4 h-4 bg-gradient-to-tr from-yellow-600 to-yellow-300 rounded-md flex items-center justify-center text-white font-bold text-xs shadow-lg shadow-yellow-500/20">B</div>
          </div>
          <div className="flex gap-4 text-xs font-mono text-gray-500">
              <div className="flex items-center gap-1.5 bg-gray-900/50 px-2 py-1 rounded border border-gray-800">
