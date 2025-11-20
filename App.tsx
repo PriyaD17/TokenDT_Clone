@@ -82,7 +82,7 @@ const useTokenData = () => {
                 new: [newToken, ...prev.new].slice(0, 50)
             };
         });
-    }, 1000);
+    }, 3000);
 
   
     const finalInterval = setInterval(() => {
