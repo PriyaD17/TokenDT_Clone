@@ -6,6 +6,9 @@ import { TokenCard } from './components/TokenCard';
 import { TokenSkeleton } from './components/Skeleton';
 import { IconZap, IconFilter } from './components/Icons';
 import { ScrollArea } from './components/ui/ScrollArea';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { Tooltip } from './components/Tooltip';
+import { SettingsModal } from './components/SettingsModal';
 
 
 const useTokenData = () => {
@@ -22,7 +25,7 @@ const useTokenData = () => {
     return [...list].sort((a, b) => b.createdTime - a.createdTime);
   };
 
-  // Initial Load
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setTokens({
@@ -121,20 +124,52 @@ const useTokenData = () => {
 
 
 
-const ColumnHeader = ({ title, count }: { title: string; count: number }) => (
-  <div className="flex items-center justify-between p-3 bg-[#0a0b0f] border-b border-gray-800 z-10">
-    <div className="flex items-center gap-2">
-      <h2 className="text-gray-200 font-bold text-sm">{title}</h2>
-      {count > 0 && <span className="text-[10px] bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded-full">{count}</span>}
-    </div>
-    <div className="flex gap-2">
-       <button className="p-1 hover:bg-gray-800 rounded transition-colors group">
-         <IconZap className="w-3 h-3 text-gray-600 group-hover:text-yellow-500 transition-colors" />
-       </button>
-       <button className="p-1 hover:bg-gray-800 rounded transition-colors group">
-         <IconFilter className="w-3 h-3 text-gray-600 group-hover:text-gray-300 transition-colors" />
-       </button>
-       <div className="flex bg-gray-800 rounded p-0.5">
+interface ColumnHeaderProps {
+  title: string;
+  count: number;
+  onProfileClick: (profile: string) => void;
+}
+
+const ColumnHeader = ({ title, count, onProfileClick }: ColumnHeaderProps) => (
+<div className="flex items-center justify-between p-3 bg-[#0a0b0f] border-b border-gray-800 z-10">
+  <div className="flex items-center gap-2">
+    <h2 className="text-gray-200 font-bold text-sm">{title}</h2>
+    {count > 0 && <span className="text-[10px] bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded-full">{count}</span>}
+  </div>
+  <div className="flex gap-2 items-center">
+     <button className="p-1 hover:bg-gray-800 rounded transition-colors group">
+       <IconZap className="w-3 h-3 text-gray-600 group-hover:text-yellow-500 transition-colors" />
+     </button>
+     <button className="p-1 hover:bg-gray-800 rounded transition-colors group">
+       <IconFilter className="w-3 h-3 text-gray-600 group-hover:text-gray-300 transition-colors" />
+     </button>
+     
+     {/* P1, P2, P3 Buttons */}
+     <div className="flex bg-gray-800/50 rounded p-0.5 gap-0.5">
+        <Tooltip text="P1: 1.0% Slip / 0.001 Prio / 0 Bribe">
+          <button 
+              onClick={() => onProfileClick('P1')}
+              className="w-6 h-4 flex items-center justify-center rounded text-[9px] font-bold bg-[#1e2029] text-blue-400 border border-transparent hover:border-blue-500 hover:text-blue-300 transition-all"
+          >
+              P1
+          </button>
+        </Tooltip>
+        <Tooltip text="P2: 2.5% Slip / 0.005 Prio / 0.01 Bribe">
+          <button 
+          onClick={() => onProfileClick('P2')}
+          className="w-6 h-4 flex items-center justify-center rounded text-[9px] font-bold bg-[#1e2029] text-purple-400 border border-transparent hover:border-purple-500 hover:text-purple-300 transition-all"
+      >
+          P2
+      </button>
+    </Tooltip>
+    <Tooltip text="P3: 5.0% Slip / 0.02 Prio / 0.1 Bribe">
+      <button 
+          onClick={() => onProfileClick('P3')}
+          className="w-6 h-4 flex items-center justify-center rounded text-[9px] font-bold bg-[#1e2029] text-yellow-400 border border-transparent hover:border-yellow-500 hover:text-yellow-300 transition-all"
+      >
+          P3
+      </button>
+    </Tooltip>
           <div className="w-2 h-2 bg-blue-500 rounded-full m-0.5"></div>
           <div className="w-2 h-2 bg-gray-600 rounded-full m-0.5"></div>
           <div className="w-2 h-2 bg-gray-600 rounded-full m-0.5"></div>
@@ -157,9 +192,11 @@ const TokenList = memo(({ tokens, loading }: { tokens: TokenData[]; loading: boo
   return (
     <ScrollArea className="flex-1">
       <div className="p-2 pb-20">
+        <ErrorBoundary>
         {tokens.map(token => (
           <TokenCard key={token.id} token={token} />
         ))}
+        </ErrorBoundary>
       </div>
     </ScrollArea>
   );
@@ -167,6 +204,7 @@ const TokenList = memo(({ tokens, loading }: { tokens: TokenData[]; loading: boo
 
 const App: React.FC = () => {
   const { tokens, loading } = useTokenData();
+  const [settingsProfile, setSettingsProfile] = useState<string | null>(null);
 
   return (
     <div className="flex flex-col h-screen bg-[#0a0b0f] text-gray-300 font-sans selection:bg-blue-500/30">
@@ -188,33 +226,40 @@ const App: React.FC = () => {
       </header>
 
       {/* Main Grid Content */}
+      <ErrorBoundary>
       <div className="flex-1 overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-3 h-full divide-y md:divide-y-0 md:divide-x divide-gray-800">
           
           {/* Column 1: New Pairs */}
           <div className="flex flex-col h-full min-h-0 min-w-0 relative bg-[#0a0b0f]/50">
             <div className="absolute top-0 left-0 w-[1px] h-full bg-gradient-to-b from-green-500/20 to-transparent pointer-events-none"></div>
-            <ColumnHeader title="New Pairs" count={tokens.new.length} />
+            <ColumnHeader title="New Pairs" 
+                count={tokens.new.length} 
+                onProfileClick={setSettingsProfile}  />
             <TokenList tokens={tokens.new} loading={loading} />
           </div>
 
           {/* Column 2: Final Stretch */}
           <div className="flex flex-col h-full min-h-0 min-w-0 relative bg-[#0a0b0f]/50">
             <div className="absolute top-0 left-0 w-[1px] h-full bg-gradient-to-b from-yellow-500/20 to-transparent pointer-events-none"></div>
-            <ColumnHeader title="Final Stretch" count={tokens.final.length} />
+            <ColumnHeader title="Final Stretch" 
+                count={tokens.final.length} 
+                onProfileClick={setSettingsProfile}/>
             <TokenList tokens={tokens.final} loading={loading} />
           </div>
 
           {/* Column 3: Migrated */}
           <div className="flex flex-col h-full min-h-0 min-w-0 relative bg-[#0a0b0f]/50">
             <div className="absolute top-0 left-0 w-[1px] h-full bg-gradient-to-b from-purple-500/20 to-transparent pointer-events-none"></div>
-            <ColumnHeader title="Migrated" count={tokens.migrated.length} />
+            <ColumnHeader title="Migrated" 
+                count={tokens.migrated.length} 
+                onProfileClick={setSettingsProfile}/>
             <TokenList tokens={tokens.migrated} loading={loading} />
           </div>
 
         </div>
       </div>
-      
+      </ErrorBoundary>
       {/* Status Bar */}
       <div className="h-6 bg-[#050508] border-t border-gray-800 flex items-center justify-between px-3 text-[10px] text-gray-600 shrink-0">
          <div className="flex gap-3">
@@ -230,6 +275,12 @@ const App: React.FC = () => {
             <span>Updated: {new Date().toLocaleTimeString()}</span>
          </div>
       </div>
+      {settingsProfile && (
+          <SettingsModal 
+            profile={settingsProfile} 
+            onClose={() => setSettingsProfile(null)} 
+          />
+      )}
     </div>
   );
 };
