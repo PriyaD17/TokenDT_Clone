@@ -1,0 +1,5 @@
+{
+  "name": "Pulse",
+  "description": "A high-performance, real-time crypto token dashboard clone featuring live price updates, complex data visualization, and dense information layout using React and Tailwind.",
+  "requestFramePermissions": []
+}

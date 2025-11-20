@@ -1,0 +1,210 @@
+
+import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
+import { TokenData, ColumnConfig } from './types';
+import { generateFakeToken } from './services/mockData';
+import { TokenCard } from './components/TokenCard';
+import { TokenSkeleton } from './components/Skeleton';
+import { IconZap, IconFilter } from './components/Icons';
+import { ScrollArea } from './components/ui/ScrollArea';
+
+
+const useTokenData = () => {
+  const [tokens, setTokens] = useState<{
+    new: TokenData[];
+    final: TokenData[];
+    migrated: TokenData[];
+  }>({ new: [], final: [], migrated: [] });
+
+  const [loading, setLoading] = useState(true);
+
+ 
+  const sortByNewest = (list: TokenData[]) => {
+    return [...list].sort((a, b) => b.createdTime - a.createdTime);
+  };
+
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTokens({
+        new: sortByNewest(Array.from({ length: 50 }, () => generateFakeToken('new'))),
+        final: sortByNewest(Array.from({ length: 50 }, () => generateFakeToken('final'))),
+        migrated: sortByNewest(Array.from({ length: 50 }, () => generateFakeToken('migrated'))),
+      });
+      setLoading(false);
+    }, 2000); 
+    return () => clearTimeout(timer);
+  }, []);
+
+
+  useEffect(() => {
+    if (loading) return;
+
+    const interval = setInterval(() => {
+      setTokens(prev => {
+        const newState = { ...prev };
+        const categories: (keyof typeof prev)[] = ['new', 'final', 'migrated'];
+
+      
+        const updateCount = Math.floor(Math.random() * 5) + 3; 
+
+        for (let i = 0; i < updateCount; i++) {
+             const colKey = categories[Math.floor(Math.random() * categories.length)];
+             const colTokens = [...newState[colKey]];
+             if (colTokens.length === 0) continue;
+             
+             const idx = Math.floor(Math.random() * colTokens.length);
+             const token = { ...colTokens[idx] };
+
+            
+             const volatility = colKey === 'migrated' ? 0.005 : 0.02; 
+             const change = (Math.random() - 0.48) * volatility; 
+             
+             token.marketCap = Math.max(1000, token.marketCap * (1 + change));
+             token.priceChange24h += (change * 100);
+             
+            
+             if (change > 0.0001) token.priceTrend = 'up';
+             else if (change < -0.0001) token.priceTrend = 'down';
+             else token.priceTrend = 'neutral';
+
+             colTokens[idx] = token;
+             newState[colKey] = colTokens;
+        }
+
+        if (Math.random() > 0.5) { 
+          
+           const targetCol = categories[Math.floor(Math.random() * categories.length)];
+           
+           const newToken = generateFakeToken(targetCol as "new" | "final" | "migrated");
+           newToken.createdTime = Date.now(); 
+           
+
+           newState[targetCol] = [newToken, ...newState[targetCol]].slice(0, 50);
+        }
+
+        return newState;
+      });
+    }, 300); 
+
+    return () => clearInterval(interval);
+  }, [loading]);
+
+  return { tokens, loading };
+};
+
+// --- Components ---
+
+const ColumnHeader = ({ title, count }: { title: string; count: number }) => (
+  <div className="flex items-center justify-between p-3 bg-[#0a0b0f] border-b border-gray-800 z-10">
+    <div className="flex items-center gap-2">
+      <h2 className="text-gray-200 font-bold text-sm">{title}</h2>
+      {count > 0 && <span className="text-[10px] bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded-full">{count}</span>}
+    </div>
+    <div className="flex gap-2">
+       <button className="p-1 hover:bg-gray-800 rounded transition-colors group">
+         <IconZap className="w-3 h-3 text-gray-600 group-hover:text-yellow-500 transition-colors" />
+       </button>
+       <button className="p-1 hover:bg-gray-800 rounded transition-colors group">
+         <IconFilter className="w-3 h-3 text-gray-600 group-hover:text-gray-300 transition-colors" />
+       </button>
+       <div className="flex bg-gray-800 rounded p-0.5">
+          <div className="w-2 h-2 bg-blue-500 rounded-full m-0.5"></div>
+          <div className="w-2 h-2 bg-gray-600 rounded-full m-0.5"></div>
+          <div className="w-2 h-2 bg-gray-600 rounded-full m-0.5"></div>
+       </div>
+    </div>
+  </div>
+);
+
+const TokenList = memo(({ tokens, loading }: { tokens: TokenData[]; loading: boolean }) => {
+  if (loading) {
+    return (
+      <ScrollArea className="flex-1">
+        <div className="p-2">
+          {Array.from({ length: 8 }).map((_, i) => <TokenSkeleton key={i} />)}
+        </div>
+      </ScrollArea>
+    );
+  }
+
+  return (
+    <ScrollArea className="flex-1">
+      <div className="p-2 pb-20">
+        {tokens.map(token => (
+          <TokenCard key={token.id} token={token} />
+        ))}
+      </div>
+    </ScrollArea>
+  );
+});
+
+const App: React.FC = () => {
+  const { tokens, loading } = useTokenData();
+
+  return (
+    <div className="flex flex-col h-screen bg-[#0a0b0f] text-gray-300 font-sans selection:bg-blue-500/30">
+      {/* App Header (Simulated) */}
+      <header className="h-12 bg-[#0a0b0f] border-b border-gray-800 flex items-center px-4 justify-between shrink-0 z-20">
+         <div className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-md flex items-center justify-center text-white font-bold text-xs shadow-lg shadow-blue-500/20">T</div>
+            <span className="font-bold text-gray-100 tracking-tight">Terminal<span className="text-blue-500">Velocity</span></span>
+         </div>
+         <div className="flex gap-4 text-xs font-mono text-gray-500">
+             <div className="flex items-center gap-1.5 bg-gray-900/50 px-2 py-1 rounded border border-gray-800">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                <span>SOL: <span className="text-green-400">$142.50</span></span>
+             </div>
+             <div className="hidden sm:flex items-center gap-1.5 bg-gray-900/50 px-2 py-1 rounded border border-gray-800">
+                <span>TPS: <span className="text-blue-400">2,401</span></span>
+             </div>
+         </div>
+      </header>
+
+      {/* Main Grid Content */}
+      <div className="flex-1 overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-3 h-full divide-y md:divide-y-0 md:divide-x divide-gray-800">
+          
+          {/* Column 1: New Pairs */}
+          <div className="flex flex-col h-full min-h-0 min-w-0 relative bg-[#0a0b0f]/50">
+            <div className="absolute top-0 left-0 w-[1px] h-full bg-gradient-to-b from-green-500/20 to-transparent pointer-events-none"></div>
+            <ColumnHeader title="New Pairs" count={tokens.new.length} />
+            <TokenList tokens={tokens.new} loading={loading} />
+          </div>
+
+          {/* Column 2: Final Stretch */}
+          <div className="flex flex-col h-full min-h-0 min-w-0 relative bg-[#0a0b0f]/50">
+            <div className="absolute top-0 left-0 w-[1px] h-full bg-gradient-to-b from-yellow-500/20 to-transparent pointer-events-none"></div>
+            <ColumnHeader title="Final Stretch" count={tokens.final.length} />
+            <TokenList tokens={tokens.final} loading={loading} />
+          </div>
+
+          {/* Column 3: Migrated */}
+          <div className="flex flex-col h-full min-h-0 min-w-0 relative bg-[#0a0b0f]/50">
+            <div className="absolute top-0 left-0 w-[1px] h-full bg-gradient-to-b from-purple-500/20 to-transparent pointer-events-none"></div>
+            <ColumnHeader title="Migrated" count={tokens.migrated.length} />
+            <TokenList tokens={tokens.migrated} loading={loading} />
+          </div>
+
+        </div>
+      </div>
+      
+      {/* Global Footer / Status Bar */}
+      <div className="h-6 bg-[#050508] border-t border-gray-800 flex items-center justify-between px-3 text-[10px] text-gray-600 shrink-0">
+         <div className="flex gap-3">
+            <span className="flex items-center gap-1.5 hover:text-green-500 transition-colors cursor-default">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> 
+                Operational
+            </span>
+            <span className="hidden sm:inline">v1.4.2-beta</span>
+         </div>
+         <div className="flex gap-4">
+            <span className="hover:text-gray-400 cursor-pointer transition-colors">Privacy</span>
+            <span className="hover:text-gray-400 cursor-pointer transition-colors">Terms</span>
+            <span>Updated: {new Date().toLocaleTimeString()}</span>
+         </div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
