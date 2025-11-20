@@ -94,7 +94,7 @@ const useTokenData = () => {
                 final: [newToken, ...prev.final].slice(0, 50)
             };
         });
-    }, 60000);
+    }, 20000);
 
 
     const migratedInterval = setInterval(() => {
@@ -106,7 +106,7 @@ const useTokenData = () => {
                 migrated: [newToken, ...prev.migrated].slice(0, 50)
             };
         });
-    }, 20000);
+    }, 10000);
 
     return () => {
       clearInterval(priceInterval);
