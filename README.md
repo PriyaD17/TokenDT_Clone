@@ -2,7 +2,7 @@
 
 A high-performance, real-time crypto token dashboard clone designed for tracking high-velocity token launches on Solana. This application features a pixel-perfect UI, complex data visualization, and simulated real-time WebSocket updates.
 
-![Axiom Pulse](https://via.placeholder.com/1200x600?text=Axiom+Pulse+Dashboard)
+![Axiom Pulse](./components/ui/Axiom_Pulse_SS.png)
 
 ## ⚡ Core Features
 
